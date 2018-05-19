@@ -15,7 +15,43 @@
 
 // accessible variables in this scope
 var window, document, ARGS, $, jQuery, moment, kbn;
-
+var myObj = {
+"business": [
+  {
+    "name": "Business1",
+    "apps": [
+      {
+        "name": "BUS1-APP1",
+        "envs": [
+          {
+            "name": "BUS1-APP1-ENV1"
+          },
+          {
+            "name": "BUS1-APP1-ENV2"
+          },
+          {
+            "name": "BUS1-APP1-ENV3"
+          }
+        ]
+      },
+      {
+        "name": "BUS1-APP2",
+        "envs": [
+          {
+            "name": "BUS1-APP2-ENV1"
+          },
+          {
+            "name": "BUS1-APP2-ENV2"
+          },
+          {
+            "name": "BUS1-APP2-ENV3"
+          }
+        ]       
+      }
+    ]
+  }
+]
+}
 
 /*
 var host_regex = ".*";
@@ -39,6 +75,7 @@ var host_re = new RegExp(host_regex);
       populated in strategic places
 
 */
+/*
 
 function readTextFile(file, callback) {
     var rawFile = new XMLHttpRequest();
@@ -61,7 +98,7 @@ function init(){
     
 });
 }
-
+*/
 
 function make_panel (env,business,app) {
 return {
@@ -166,12 +203,12 @@ return function(callback) {
    // automatically parsed by the ajax code.
     .done(function(resp) {
       
-    for (var i in myObj.business[0].app){
+    for (var i in myObj.business[0].apps){
       var new_panels = [];
-      var app_row = make_row(myObj.business[0].app[i].name);
+      var app_row = make_row(myObj.business[0].apps[i].name);
     
-      for (var j in myObj.business[0].app[i].env){
-        new_panels.push(make_panel(myObj.business[0].app[i].env[j].name,myObj.business[0].name,myObj.business[0].app[i].name));        
+      for (var j in myObj.business[0].apps[i].envs){
+        new_panels.push(make_panel(myObj.business[0].apps[i].envs[j].name,myObj.business[0].name,myObj.business[0].apps[i].name));        
       }
 
       app_row.panels = new_panels;
