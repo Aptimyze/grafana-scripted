@@ -15,7 +15,8 @@
 
 // accessible variables in this scope
 var window, document, ARGS, $, jQuery, moment, kbn;
-let myObj = require('./applications.json');
+let json = require('./applications.json');
+var myObj = JSON.stringify(json);
 /*
 var myObj = {
 "business": [
