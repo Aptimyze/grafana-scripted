@@ -1,0 +1,37 @@
+myObj = {
+"lob": [
+  {
+    "name": "Business1",
+    "apps": [
+      {
+        "name": "BUS1-APP1",
+        "envs": [
+          {
+            "name": "BUS1-APP1-ENV1"
+          },
+          {
+            "name": "BUS1-APP1-ENV2"
+          },
+          {
+            "name": "BUS1-APP1-ENV3"
+          }
+        ]
+      },
+      {
+        "name": "BUS1-APP2",
+        "envs": [
+          {
+            "name": "BUS1-APP2-ENV1"
+          },
+          {
+            "name": "BUS1-APP2-ENV2"
+          },
+          {
+            "name": "BUS1-APP2-ENV3"
+          }
+        ]       
+      }
+    ]
+  }
+]
+}

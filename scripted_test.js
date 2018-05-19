@@ -12,12 +12,23 @@
  */
 
 'use strict';
-
 // accessible variables in this scope
 var window, document, ARGS, $, jQuery, moment, kbn;
-let json = require('./applications.json');
-var myObj = JSON.stringify(json);
+//let json = require('./applications.json');
+//var myObj = JSON.stringify(json);
 /*
+function get_data(search_url){
+    var res = [];
+    var req = new XMLHttpRequest();
+    req.open('GET', search_url, true);
+    req.send(null);
+    var obj = JSON.parse(req.responseText);
+    return obj;
+  };
+
+var myObj = get_data('http://play-grafana.tellypathy.com/applications.txt');
+
+*/
 var myObj = {
 "business": [
   {
@@ -55,15 +66,22 @@ var myObj = {
   }
 ]
 }
-*/
+
+var business_name = "";
+// Grab business name from url param
+if(!_.isUndefined(ARGS.host)) {
+   business_name = ARGS.business;
+   console.log("Set business name to " + business_name);  
+}
+
 
 /*
 var host_regex = ".*";
 var client_name = "";
 
-// Grab host name from url param
+// Grab business name from url param
 if(!_.isUndefined(ARGS.host)) {
-  host_regex = ARGS.host;
+  business = ARGS.business;
   console.log("Set host regex to "+host_regex);  
 }
 // Grab full 'human readable' client name from url param
@@ -181,11 +199,39 @@ return function(callback) {
    // Intialize a skeleton with some deisred defaults and an empty rows array
    dashboard = {
       rows : [],
-   };
+   "templating": {
+    "list": [
+      {
+        "allValue": null, 
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "business",
+        "options": [
+          {
+            "selected": true,
+            "text": "Business1",
+            "value": "Business1"
+          },
+          {
+            "selected": false,
+            "text": "Business2",
+            "value": "Business2"
+          }
+        ],
+        "query": "Business1,Business2",
+        "type": "custom"
+      }
+    ]
+  },
+
+};
 
    var app_row = {};
    // Set a title
    dashboard.title = 'Scripted Templated dashboard';
+   
 
    // Set default time
    // time can be overriden in the url using from/to parameters, but this is
@@ -206,19 +252,24 @@ return function(callback) {
    // When the query returns, it sends back JSON which is
    // automatically parsed by the ajax code.
     .done(function(resp) {
-      
-    for (var i in myObj.business[0].apps){
+    var index = myObj.findIndex(function(item, i){
+     return item.name === business_name
+    });
+
+console.log(index);
+    for (var i in myObj.business[index].apps){
       var new_panels = [];
-      var app_row = make_row(myObj.business[0].apps[i].name);
+      var app_row = make_row(myObj.business[index].apps[i].name);
     
-      for (var j in myObj.business[0].apps[i].envs){
-        new_panels.push(make_panel(myObj.business[0].apps[i].envs[j].name,myObj.business[0].name,myObj.business[0].apps[i].name));        
+      for (var j in myObj.business[index].apps[i].envs){
+        new_panels.push(make_panel(myObj.business[index].apps[i].envs[j].name,myObj.business[index].name,myObj.business[index].apps[i].name));        
       }
 
       app_row.panels = new_panels;
       dashboard.rows.push(app_row); 
           
     }
+
 
       // when dashboard is composed call the callback
       // function and pass the dashboard      
