@@ -5,13 +5,10 @@
  * This script generates a dashboard object that Grafana can load. It also takes a number of user
  * supplied URL parameters (in the ARGS variable)
  *
- * Global accessible variables
- * window, document, $, jQuery, ARGS, moment
- *
  * Return a dashboard object, or a function
  *
- * For async scripts, return a function, this function must take a single callback function,
- * call this function with the dashboard object
+ * For async scripts, return a function, this function must take a single callback function as argument,
+ * call this callback function with the dashboard object (look at scripted_async.js for an example)
  */
 
 'use strict';
@@ -19,62 +16,171 @@
 // accessible variables in this scope
 var window, document, ARGS, $, jQuery, moment, kbn;
 
-return function(callback) {
 
-  // Setup some variables
-  var dashboard;
+/*
+var host_regex = ".*";
+var client_name = "";
 
-  // Initialize a skeleton with nothing but a rows array and service object
-  dashboard = {
-    rows : [],
-    services : {}
-  };
+// Grab host name from url param
+if(!_.isUndefined(ARGS.host)) {
+  host_regex = ARGS.host;
+  console.log("Set host regex to "+host_regex);  
+}
+// Grab full 'human readable' client name from url param
+if(!_.isUndefined(ARGS.client)) {
+  client_name = ARGS.client;
+  console.log("Set host regex to "+host_regex);  
+}
+var host_re = new RegExp(host_regex);
+*/
+/*
+   make_panel
+      Return a panel with the hostname
+      populated in strategic places
 
-  // Set a title
-  dashboard.title = 'Scripted dash';
+*/
 
-  // Set default time
-  // time can be overridden in the url using from/to parameters, but this is
-  // handled automatically in grafana core during dashboard initialization
-  dashboard.time = {
-      from: "now-6h",
-      to: "now"
-  };
-
-  var rows = 1;
-  var seriesName = 'argName';
-
-  if(!_.isUndefined(ARGS.rows)) {
-    rows = parseInt(ARGS.rows, 10);
-  }
-
-  if(!_.isUndefined(ARGS.name)) {
-    seriesName = ARGS.name;
-  }
-
-  $.ajax({
-    method: 'GET',
-    url: '/'
-  })
-  .done(function(result) {
-
-    dashboard.rows.push({
-      title: 'Chart',
-      height: '300px',
-      panels: [
-        {
-          title: 'Async dashboard test',
-          type: 'text',
-          span: 12,
-          fill: 1,
-          content: '# Async test'
+function readTextFile(file, callback) {
+    var rawFile = new XMLHttpRequest();
+    rawFile.overrideMimeType("application/json");
+    rawFile.open("GET", file, true);
+    rawFile.onreadystatechange = function() {
+        if (rawFile.readyState === 4 && rawFile.status == "200") {
+            callback(rawFile.response);
         }
-      ]
-    });
+    }
+    rawFile.send(null);
+}
 
-    // when dashboard is composed call the callback
-    // function and pass the dashboard
-    callback(dashboard);
+//usage:
 
+function init(){
+   readTextFile("applications.json", function(text){
+    var myObj = JSON.parse(text);
+    
+    
+});
+}
+
+
+function make_panel (env,business,app) {
+return {
+    title: env,
+    type: 'singlestat',
+    thresholds: '0.1,4.9',
+    height: '5px',
+    colorBackground: true,
+    colorValue: false,
+    colors: ['#299c46','rgba(237, 129, 40, 0.89)','#d44a3a'],
+    datasource: 'default',
+    maxDataPoints: 1,
+    valueFontSize: "50%",
+    format: "none",
+    gauge: {
+      maxValue: 100,
+      minValue: 0,
+      show: false,
+      thresholdLabels: false,
+      thresholdMarkers: false
+    },
+    targets: [
+      {
+        application: {
+          filter: ''
+        },
+        functions: [],
+        group: {
+          filter: ''
+        },
+        host: {
+          filter: ''
+        },
+        itServiceFilter: business + '/' + app + '/' + env,
+        item: {
+          filter: ''
+        },
+        mode: 1,
+        options: {
+          showDisabledItems: false
+        },
+        refId: 'A',
+        slaProperty: {
+          name: 'Status',
+          property: 'status'
+        },
+        triggers: {
+          acknowledged: 2,
+          count: true,
+          minSeverity: 3
+        }
+      }
+    ]
+  }
+
+}
+
+
+function make_row(name) {
+  return {
+    title: name,    
+    height: '200px',
+    showTitle: true,
+    panels: [],
+  }
+}
+
+
+
+return function(callback) {
+   // Setup some variables
+   var dashboard;
+
+
+
+   // Intialize a skeleton with some deisred defaults and an empty rows array
+   dashboard = {
+      rows : [],
+   };
+
+   var app_row = {};
+   // Set a title
+   dashboard.title = 'Scripted Templated dashboard';
+
+   // Set default time
+   // time can be overriden in the url using from/to parameters, but this is
+   // handled automatically in grafana core during dashboard initialization
+   dashboard.time = {
+     from: "now-7d",     // Last 7 days
+     to: "now"
+   };
+
+   var rows = 1;
+
+
+   // Send the query
+   $.ajax({
+     method: 'GET',
+     url: '/'
+   })
+   // When the query returns, it sends back JSON which is
+   // automatically parsed by the ajax code.
+    .done(function(resp) {
+      
+    for (var i in myObj.business[0].app){
+      var new_panels = [];
+      var app_row = make_row(myObj.business[0].app[i].name);
+    
+      for (var j in myObj.business[0].app[i].env){
+        new_panels.push(make_panel(myObj.business[0].app[i].env[j].name,myObj.business[0].name,myObj.business[0].app[i].name));        
+      }
+
+      app_row.panels = new_panels;
+      dashboard.rows.push(app_row); 
+          
+    }
+
+      // when dashboard is composed call the callback
+      // function and pass the dashboard      
+      callback(dashboard);
   });
 }
