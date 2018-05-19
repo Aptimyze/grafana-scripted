@@ -15,6 +15,8 @@
 
 // accessible variables in this scope
 var window, document, ARGS, $, jQuery, moment, kbn;
+let myObj = require('./applications.json');
+/*
 var myObj = {
 "business": [
   {
@@ -52,6 +54,7 @@ var myObj = {
   }
 ]
 }
+*/
 
 /*
 var host_regex = ".*";
