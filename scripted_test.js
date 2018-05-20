@@ -42,9 +42,6 @@ var myObj = {
           },
           {
             "name": "BUS1-APP1-ENV2"
-          },
-          {
-            "name": "BUS1-APP1-ENV3"
           }
         ]
       },
@@ -53,27 +50,43 @@ var myObj = {
         "envs": [
           {
             "name": "BUS1-APP2-ENV1"
-          },
-          {
-            "name": "BUS1-APP2-ENV2"
-          },
-          {
-            "name": "BUS1-APP2-ENV3"
           }
         ]       
       }
     ]
+  },
+{
+    "name": "Business2",
+    "apps": [
+      {
+        "name": "BUS2-APP1",
+        "envs": [
+          {
+            "name": "BUS2-APP1-ENV1"
+          }
+        ]
+      },
+      {
+        "name": "BUS2-APP2",
+        "envs": [
+          {
+            "name": "BUS2-APP2-ENV1"
+          }
+        ]
+      }
+    ]
   }
+
 ]
 }
 
-var business_name = "";
+var business_name = "Business1";
 // Grab business name from url param
-if(!_.isUndefined(ARGS.host)) {
+if(!_.isUndefined(ARGS.business)) {
    business_name = ARGS.business;
-   console.log("Set business name to " + business_name);  
+//   console.log("Set business name to " + business_name);  
 }
-
+var index = myObj.business.findIndex(obj => obj.name==business_name);
 
 /*
 var host_regex = ".*";
@@ -201,7 +214,8 @@ return function(callback) {
       rows : [],
    "templating": {
     "list": [
-      {
+      { 
+        
         "allValue": null, 
         "hide": 0,
         "includeAll": false,
@@ -252,11 +266,8 @@ return function(callback) {
    // When the query returns, it sends back JSON which is
    // automatically parsed by the ajax code.
     .done(function(resp) {
-    var index = myObj.findIndex(function(item, i){
-     return item.name === business_name
-    });
+    
 
-console.log(index);
     for (var i in myObj.business[index].apps){
       var new_panels = [];
       var app_row = make_row(myObj.business[index].apps[i].name);
