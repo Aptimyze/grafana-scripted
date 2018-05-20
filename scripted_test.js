@@ -14,21 +14,23 @@
 'use strict';
 // accessible variables in this scope
 var window, document, ARGS, $, jQuery, moment, kbn;
-//let json = require('./applications.json');
-//var myObj = JSON.stringify(json);
+var myObj;
+console.log('testing1233');
+
+function getdata(){
+//        var search_url = window.location.protocol + '//' + window.location.host + '/applications.json';
+	var search_url = 'https://raw.githubusercontent.com/deshike22/grafana-scripted/master/applications.json';
+//        var search_url = 'http://play-grafana.tellypathy.com/applications.json';
+	var request = new XMLHttpRequest();
+	request.open('GET',search_url);
+	request.send(null);
+	var myObj = JSON.parse(request.responseText);
+        console.log("myObject result" + myObj);
+	return myObj;
+};
+console.log(getdata());
+
 /*
-function get_data(search_url){
-    var res = [];
-    var req = new XMLHttpRequest();
-    req.open('GET', search_url, true);
-    req.send(null);
-    var obj = JSON.parse(req.responseText);
-    return obj;
-  };
-
-var myObj = get_data('http://play-grafana.tellypathy.com/applications.txt');
-
-*/
 var myObj = {
 "business": [
   {
@@ -80,6 +82,7 @@ var myObj = {
 ]
 }
 
+*/
 var business_name = "Business1";
 // Grab business name from url param
 if(!_.isUndefined(ARGS.business)) {
@@ -88,52 +91,6 @@ if(!_.isUndefined(ARGS.business)) {
 }
 var index = myObj.business.findIndex(obj => obj.name==business_name);
 
-/*
-var host_regex = ".*";
-var client_name = "";
-
-// Grab business name from url param
-if(!_.isUndefined(ARGS.host)) {
-  business = ARGS.business;
-  console.log("Set host regex to "+host_regex);  
-}
-// Grab full 'human readable' client name from url param
-if(!_.isUndefined(ARGS.client)) {
-  client_name = ARGS.client;
-  console.log("Set host regex to "+host_regex);  
-}
-var host_re = new RegExp(host_regex);
-*/
-/*
-   make_panel
-      Return a panel with the hostname
-      populated in strategic places
-
-*/
-/*
-
-function readTextFile(file, callback) {
-    var rawFile = new XMLHttpRequest();
-    rawFile.overrideMimeType("application/json");
-    rawFile.open("GET", file, true);
-    rawFile.onreadystatechange = function() {
-        if (rawFile.readyState === 4 && rawFile.status == "200") {
-            callback(rawFile.response);
-        }
-    }
-    rawFile.send(null);
-}
-
-//usage:
-
-function init(){
-   readTextFile("applications.json", function(text){
-    var myObj = JSON.parse(text);
-    
-    
-});
-}
-*/
 
 function make_panel (env,business,app) {
 return {
@@ -266,7 +223,7 @@ return function(callback) {
    // When the query returns, it sends back JSON which is
    // automatically parsed by the ajax code.
     .done(function(resp) {
-    
+   console.log(getdata()); 
 
     for (var i in myObj.business[index].apps){
       var new_panels = [];
