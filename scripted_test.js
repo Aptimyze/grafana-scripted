@@ -15,74 +15,12 @@
 // accessible variables in this scope
 var window, document, ARGS, $, jQuery, moment, kbn;
 var myObj;
-console.log('testing1233');
 
-function getdata(){
-//        var search_url = window.location.protocol + '//' + window.location.host + '/applications.json';
-	var search_url = 'https://raw.githubusercontent.com/deshike22/grafana-scripted/master/applications.json';
-//        var search_url = 'http://play-grafana.tellypathy.com/applications.json';
-	var request = new XMLHttpRequest();
-	request.open('GET',search_url);
-	request.send(null);
-	var myObj = JSON.parse(request.responseText);
-        console.log("myObject result" + myObj);
-	return myObj;
-};
-console.log(getdata());
+$.getJSON('https://raw.githubusercontent.com/deshike22/grafana-scripted/master/applications.json', function(result) {
+	console.log(result);
+});
+console.log(result.business[0].name);
 
-/*
-var myObj = {
-"business": [
-  {
-    "name": "Business1",
-    "apps": [
-      {
-        "name": "BUS1-APP1",
-        "envs": [
-          {
-            "name": "BUS1-APP1-ENV1"
-          },
-          {
-            "name": "BUS1-APP1-ENV2"
-          }
-        ]
-      },
-      {
-        "name": "BUS1-APP2",
-        "envs": [
-          {
-            "name": "BUS1-APP2-ENV1"
-          }
-        ]       
-      }
-    ]
-  },
-{
-    "name": "Business2",
-    "apps": [
-      {
-        "name": "BUS2-APP1",
-        "envs": [
-          {
-            "name": "BUS2-APP1-ENV1"
-          }
-        ]
-      },
-      {
-        "name": "BUS2-APP2",
-        "envs": [
-          {
-            "name": "BUS2-APP2-ENV1"
-          }
-        ]
-      }
-    ]
-  }
-
-]
-}
-
-*/
 var business_name = "Business1";
 // Grab business name from url param
 if(!_.isUndefined(ARGS.business)) {
@@ -168,35 +106,7 @@ return function(callback) {
 
    // Intialize a skeleton with some deisred defaults and an empty rows array
    dashboard = {
-      rows : [],
-   "templating": {
-    "list": [
-      { 
-        
-        "allValue": null, 
-        "hide": 0,
-        "includeAll": false,
-        "label": null,
-        "multi": false,
-        "name": "business",
-        "options": [
-          {
-            "selected": true,
-            "text": "Business1",
-            "value": "Business1"
-          },
-          {
-            "selected": false,
-            "text": "Business2",
-            "value": "Business2"
-          }
-        ],
-        "query": "Business1,Business2",
-        "type": "custom"
-      }
-    ]
-  },
-
+      rows : []
 };
 
    var app_row = {};
@@ -223,7 +133,7 @@ return function(callback) {
    // When the query returns, it sends back JSON which is
    // automatically parsed by the ajax code.
     .done(function(resp) {
-   console.log(getdata()); 
+  
 
     for (var i in myObj.business[index].apps){
       var new_panels = [];
